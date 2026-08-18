@@ -6,7 +6,8 @@ import pdfParse from "pdf-parse/lib/pdf-parse.js";
 import express from "express";
 import cors from "cors";
 import { join } from "path";
-import { mkdirSync } from "fs";
+import { mkdirSync } from "fs"; 
+import { connectDB } from "./config/db.js";
 
 const app = express();  
 app.use(cors());
@@ -17,7 +18,9 @@ app.use(express.json());
 const uploadDir = join("/tmp", "uploads");
 mkdirSync(uploadDir, { recursive: true });
 
-const upload = multer({ dest: uploadDir }); 
+const upload = multer({ dest: uploadDir });  
+
+
 
 app.post("/screen", async (req, res) => {
   try {
@@ -71,9 +74,13 @@ console.log("inside upload");
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; 
+
+
+connectDB().then(() =>{ 
 app.listen(PORT, () => {
   console.log(`🚀 HR Screening Agent running at http://localhost:${PORT}`);
   console.log(`   POST /screen — send CV as text`);
   console.log(`   POST /upload — upload PDF resume`);
+})
 });
