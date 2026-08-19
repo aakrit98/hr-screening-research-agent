@@ -7,7 +7,9 @@ import express from "express";
 import cors from "cors";
 import { join } from "path";
 import { mkdirSync } from "fs"; 
-import { connectDB } from "./config/db.js";
+import { connectDB } from "./config/db.js"; 
+import authRoutes from "./routes/authRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
 
 const app = express();  
 app.use(cors());
@@ -20,7 +22,8 @@ mkdirSync(uploadDir, { recursive: true });
 
 const upload = multer({ dest: uploadDir });  
 
-
+app.use("/auth", authRoutes); 
+app.use("/jobs", jobRoutes);
 
 app.post("/screen", async (req, res) => {
   try {
