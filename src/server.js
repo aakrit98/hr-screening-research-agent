@@ -9,7 +9,8 @@ import { join } from "path";
 import { mkdirSync } from "fs"; 
 import { connectDB } from "./config/db.js"; 
 import authRoutes from "./routes/authRoutes.js";
-import jobRoutes from "./routes/jobRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js"; 
+import candidateRoutes from "./routes/candidateRoutes.js";
 
 const app = express();  
 app.use(cors());
@@ -23,8 +24,8 @@ mkdirSync(uploadDir, { recursive: true });
 const upload = multer({ dest: uploadDir });  
 
 app.use("/auth", authRoutes); 
-app.use("/jobs", jobRoutes);
-
+app.use("/jobs", jobRoutes); 
+app.use("/candidates", candidateRoutes);
 app.post("/screen", async (req, res) => {
   try {
     const { cvText, jobRequirements } = req.body;
@@ -74,6 +75,16 @@ console.log("inside upload");
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+// catches any error that reaches Express without a response yet
+app.use((err, req, res, next) => {
+  console.error(" Global error handler caught:", err);
+  if (!res.headersSent) {
+    res.status(500).json({ error: err.message || "Something went wrong" });
   }
 });
 

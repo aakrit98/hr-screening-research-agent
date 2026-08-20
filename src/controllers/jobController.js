@@ -1,4 +1,4 @@
-import Job from "../models/Job"; 
+import Job from "../models/Job.js"; 
 
 //post-jobs admin only 
 export async function createJob(req,res) {

@@ -35,7 +35,7 @@ export async function cvAnalyzerAgent(cvText , jobRequirements) {
     console.log("CV Analyzer : extracting candidate info.....");
 
 
-    const filledPrompt = CV_ANALYZER_PROMPT.replace("{cvText}" , cvText).replace("{jobRequirements}" , jobRequirements); 
+const filledPrompt = SCORER_PROMPT.replace("{analysis}" , analysis).replace("{jobRequirements}" , jobRequirements)
 
         const analysis = await callLLM(filledPrompt , 0)
         console.log("CV analused"); 

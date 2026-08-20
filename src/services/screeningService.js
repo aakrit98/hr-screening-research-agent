@@ -1,4 +1,4 @@
-import { runScreening } from "../orchestrator";
+import { runScreening } from "../orchestrator.js";
 import Candidate from "../models/Candidate.js";
 import Screening from "../models/Screening.js"; 
 
@@ -39,7 +39,7 @@ export async function evaluateCandidate(candidateId , cvText , jobRequirements) 
           console.log(`✅ Screening complete for candidate ${candidateId}: ${result.decision}`);
 
     } catch (error) {
-        console.error(`❌ Screening failed for candidate ${candidateId}:`, err.message);
+        console.error(`❌ Screening failed for candidate ${candidateId}`, err.message);
 
         // mark it so it doesn't sit stuck at PENDING forever, and admin can spot failures
     try {

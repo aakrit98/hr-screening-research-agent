@@ -50,7 +50,7 @@ export async function applyToJob(req,res) {
     evaluateCandidate(candidate._id, cvText, job.requirements);
 
   } catch (err) {
-    console.error(err);
+   console.error("Candidate controller error:", err.message, err.stack);
     // avoid double-sending a response if headers already went out
     if (!res.headersSent) {
       res.status(500).json({ error: err.message });
