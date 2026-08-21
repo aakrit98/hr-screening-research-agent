@@ -39,13 +39,13 @@ export async function evaluateCandidate(candidateId , cvText , jobRequirements) 
           console.log(`✅ Screening complete for candidate ${candidateId}: ${result.decision}`);
 
     } catch (error) {
-        console.error(`❌ Screening failed for candidate ${candidateId}`, err.message);
+  console.error(`❌ Screening failed for candidate ${candidateId}`, error.message);
 
-        // mark it so it doesn't sit stuck at PENDING forever, and admin can spot failures
-    try {
-      await Candidate.findByIdAndUpdate(candidateId, { status: "REJECTED" });
-    } catch (updateErr) {
-      console.error("Also failed to update candidate status after error:", updateErr.message);
-    }
+  // mark it so it doesn't sit stuck at PENDING forever, and admin can spot failures
+  try {
+    await Candidate.findByIdAndUpdate(candidateId, { status: "REJECTED" });
+  } catch (updateErr) {
+    console.error("Also failed to update candidate status after error:", updateErr.message);
   }
+}
 }
