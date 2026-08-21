@@ -4,7 +4,8 @@ import pdfParse from "pdf-parse/lib/pdf-parse.js";
 import Candidate from "../models/Candidate.js";
 import Job from "../models/Job.js";
 import { runScreening } from "../orchestrator.js";
-import { evaluateCandidate } from "../services/screeningService.js";
+import { evaluateCandidate } from "../services/screeningService.js"; 
+import Screening from "../models/Screening.js";
 
 
 
@@ -79,5 +80,56 @@ function extractTextFromUrl(url) {
 }
 
 
+//get candidate - admin only 
 
+export async function getAllCandidate(req,res) {
+  try {
+    const candidates = await Candidate.find() 
+       .populate("job", "title")      // pulls in the job's title alongside the candidate
+      .populate("user", "name email") // pulls in the applicant's name and email
+      .sort({ createdAt: -1 });       // newest applications first
+
+        res.json(candidates);
+  } catch (error) {
+    console.error(error); 
+    res.status(500).json({error : error.message});
+  }
+} 
+
+//get /candidate/:id - admin only -full detail on one candidate 
+export async function getCandidateById(req,res) {
+  try {
+    const candidate = await Candidate.findById(req.params.id) 
+        .populate("job" , "title requirements") 
+        .populate("user" , "name email") 
+
+
+        if(!candidate) { 
+          return res.status(400).json({error: "candidate not found"});
+        } 
+
+        //also fetch the full AI screening trail linked to this candidate 
+        const screening = await Screening.findOne({candidate : candidate._id}); 
+
+        res.json({candidate , screening});
+  } catch (error) {
+    console.error(error); 
+    res.status(500).json({error :error.message});
+  }
+}
+
+
+//get /candidate/job/:id - admin only // all candidate for only one specific job
+export async function getCandidatesByJob(req,res) {
+  try {
+    const candidates = await Candidate.find({job : req.params.jobId})
+    .populate("user" , "name email")
+    .sort({createdAt: -1}); 
+    res.json(candidates);
+  } catch (error) { 
+    console.error(error);
+    res.satatus(500).json({error : error.message});
+    
+  }
+}
 
