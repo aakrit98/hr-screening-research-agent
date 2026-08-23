@@ -133,3 +133,52 @@ export async function getCandidatesByJob(req,res) {
   }
 }
 
+
+// GET /candidates/stats — admin only — count of applicants per job
+export async function getCandidateStats(req, res) {
+  try {
+    const stats = await Candidate.aggregate([
+      {
+        $group: {
+          _id: "$job",
+          total: { $sum: 1 },
+          shortlisted: {
+            $sum: { $cond: [{ $eq: ["$status", "SHORTLISTED"] }, 1, 0] },
+          },
+          rejected: {
+            $sum: { $cond: [{ $eq: ["$status", "REJECTED"] }, 1, 0] },
+          },
+          pending: {
+            $sum: { $cond: [{ $eq: ["$status", "PENDING"] }, 1, 0] },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "jobs", // MongoDB collection name (lowercase, pluralized automatically)
+          localField: "_id",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+      { $unwind: "$job" },
+      {
+        $project: {
+          jobId: "$_id",
+          jobTitle: "$job.title",
+          total: 1,
+          shortlisted: 1,
+          rejected: 1,
+          pending: 1,
+          _id: 0,
+        },
+      },
+      { $sort: { total: -1 } }, // busiest jobs first
+    ]);
+
+    res.json(stats);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+}

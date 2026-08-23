@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import { storage } from "../config/cloudinary.js";
 import { protect } from "../middleware/authMiddleware.js";
-import { applyToJob, getAllCandidate , getCandidatesByJob , getCandidateById } from "../controllers/candidateController.js";
+import { applyToJob, getAllCandidate , getCandidatesByJob , getCandidateById, getCandidateStats } from "../controllers/candidateController.js";
 import { requireRole } from "../middleware/roleMiddleware.js";
 
 
@@ -17,7 +17,10 @@ router.post("/apply/:jobId", protect, upload.single("cv"), applyToJob);
 
 
 router.get("/" , protect , requireRole("admin") , getAllCandidate); 
+router.get("/stats" , protect , requireRole("admin") , getCandidateStats)
+
 router.get("/job/:jobId", protect, requireRole("admin"), getCandidatesByJob);
 router.get("/:id", protect, requireRole("admin"), getCandidateById);
+
 
 export default router;
