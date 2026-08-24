@@ -182,3 +182,18 @@ export async function getCandidateStats(req, res) {
     res.status(500).json({ error: err.message });
   }
 }
+ 
+
+// GET /candidates/my-applications — any logged-in user — their OWN applications only
+export async function getMyApplications(req, res) {
+  try {
+    const candidates = await Candidate.find({ user: req.user.id })
+      .populate("job", "title location employmentType")
+      .select("-cvText") // don't need to send the full extracted text back to the browser
+      .sort({ createdAt: -1 });
+    res.json(candidates);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+}
