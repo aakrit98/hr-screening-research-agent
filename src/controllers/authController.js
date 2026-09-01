@@ -1,6 +1,12 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/User.js";
+import User from "../models/User.js"; 
+import {OAuth2Client } from "google-auth-library";
+ 
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); 
+
+
 
 // helper to create a JWT for a given user
 function generateToken(user) {
@@ -75,5 +81,15 @@ export async function login(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
+  }
+}
+
+
+export async function googleAuth(params) {
+  try {
+    const {credential } = req.body;  // the token Google's button gives the frontend 
+    
+  } catch (error) {
+    
   }
 }

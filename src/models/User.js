@@ -16,13 +16,22 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true, // will be stored hashed, never plain text
+      required: function () { 
+        return !this.googleId
+      } // will be stored hashed, never plain text
+      
     },
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
-    },
+    }, 
+
+    googleId : { 
+      type: String , 
+      unique : true , 
+      sparse : true , 
+    }
   },
   { timestamps: true } // adds createdAt, updatedAt automatically
 );
