@@ -184,6 +184,33 @@ export async function getCandidateStats(req, res) {
 }
  
 
+//get/candidate/score-distribution  - admin only 
+
+export async function getScoreDistribution(req , res) {
+  try { 
+    const distribution = await Screening.aggregate([ 
+      { 
+        $bucket : { 
+          groupBy : "$score" , 
+          boundaries : [0,20,40,60,101], 
+          default : "unknown" , 
+          output : {count : {$sum:1}}, 
+        },
+      },
+    ]);
+    const labels = { 0: "0-19", 20: "20-39", 40: "40-59", 60: "60-79", 80: "80-100" }; 
+     const formatted = distribution.map((d) => ({
+      range: labels[d._id] || d._id,
+      count: d.count,
+    })); 
+
+    res.json(formatted);
+  } catch (err){ 
+ console.error(err); 
+ res.status(500).json({error : err.message});
+  }
+}
+
 // GET /candidates/my-applications — any logged-in user — their OWN applications only
 export async function getMyApplications(req, res) {
   try {

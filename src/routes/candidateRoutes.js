@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import { storage } from "../config/cloudinary.js";
 import { protect } from "../middleware/authMiddleware.js";
-import { applyToJob, getAllCandidate , getCandidatesByJob , getCandidateById, getCandidateStats, getMyApplications } from "../controllers/CandidateController.js";
+import { applyToJob, getAllCandidate , getCandidatesByJob , getCandidateById, getScoreDistribution ,getCandidateStats, getMyApplications, } from "../controllers/CandidateController.js";
 import { requireRole } from "../middleware/roleMiddleware.js";
 
 
@@ -15,9 +15,10 @@ const upload = multer({ storage });
 // protected — only a logged-in user can apply
 router.post("/apply/:jobId", protect, upload.single("cv"), applyToJob); 
 
-
+router.get("/score-distribution", protect, requireRole("admin"), getScoreDistribution);
 router.get("/" , protect , requireRole("admin") , getAllCandidate); 
-router.get("/stats" , protect , requireRole("admin") , getCandidateStats)
+router.get("/stats" , protect , requireRole("admin") , getCandidateStats);
+router.get("/score-distribution", protect, requireRole("admin"), getScoreDistribution);
 router.get("/my-applications", protect, getMyApplications);
 
 
