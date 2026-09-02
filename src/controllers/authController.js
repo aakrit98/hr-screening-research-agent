@@ -85,11 +85,48 @@ export async function login(req, res) {
 }
 
 
-export async function googleAuth(params) {
+export async function googleAuth(req,res) {
   try {
     const {credential } = req.body;  // the token Google's button gives the frontend 
+
+    if(!credential) { 
+      return res.status(400).json({error : "Google credential is required"}); 
+    }
+
+    //verify the token is genuinely from Google , and not tampered with 
+    const ticket = await googleClient.verifyIdToken({ 
+      idToken : credential , 
+      audience : process.env.GOOGLE_CLIENT_ID, 
+    })
     
-  } catch (error) {
-    
+    const payload = ticket.getPayload(); 
+    const {sub: googleId , email , name} = payload; 
+
+    //find-or-create : does this user already exist (by email)? 
+    let user = await User.findOne({email}); 
+
+    if(!user) { 
+      //brand new user - create them , no password needed 
+      user = await User.create({ 
+        name , 
+        email , 
+        googleId , 
+        role : "user"
+      });
+    } else if(!user.googleId) { 
+       //existing email/password user signing in with google for the first time - link the accounts 
+       user.googleId = googleId ; 
+       await user.save();
+    }
+
+    const token = generateToken(user); 
+
+    res.json({ 
+      token , 
+      user: {id: user._id , name : user.name , email : user.email , role : user.role},
+    }); 
+  } catch (err) {
+    console.error(err) ; 
+    res.status(401).json({error: "Google authentication failed"});
   }
 }
