@@ -1,6 +1,7 @@
 import { runScreening } from "../orchestrator.js";
 import Candidate from "../models/Candidate.js";
 import Screening from "../models/Screening.js"; 
+import { sendCandidateEmail } from "./emailService.js"; 
 
 
 
