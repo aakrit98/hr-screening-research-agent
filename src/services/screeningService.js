@@ -36,7 +36,18 @@ export async function evaluateCandidate(candidateId , cvText , jobRequirements) 
 
         candidate.status = result.decision; // shortlist or rejected 
         candidate.candidateName = result.candidateName; 
-        await candidate.save(); 
+        await candidate.save();  
+
+        //sssend the AI-generated email to the candidate 
+        const candidateWithUser = await Candidate.findById(candidateId).populate("user" , "email"); 
+        if(candidateWithUser?.user?.email) { 
+          await sendCandidateEmail( 
+            candidateWithUser.user.email,
+            result.candidateName , 
+            result.decision , 
+            result.email
+          )
+        }
           console.log(`✅ Screening complete for candidate ${candidateId}: ${result.decision}`);
 
     } catch (error) {
@@ -49,4 +60,5 @@ export async function evaluateCandidate(candidateId , cvText , jobRequirements) 
     console.error("Also failed to update candidate status after error:", updateErr.message);
   }
 }
-}
+} 
+
