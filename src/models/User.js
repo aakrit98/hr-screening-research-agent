@@ -31,7 +31,19 @@ const userSchema = new mongoose.Schema(
       type: String , 
       unique : true , 
       sparse : true , 
-    }
+    } ,
+
+    seekingRole: {
+  type: String,
+  trim: true,
+  default: "",
+},
+
+
+seekingRoleEmbedding: {
+  type: [Number],
+  select: false,
+},
   },
   { timestamps: true } // adds createdAt, updatedAt automatically
 );

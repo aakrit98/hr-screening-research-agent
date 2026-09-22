@@ -15,7 +15,7 @@ export async function sendCandidateEmail(candidateEmail , candidateName , decisi
 
 
     const result = await resend.emails.send({ 
-        from : "TalentBridge <maharjanfreaky@gmail.com>",
+        from : "TalentBridge <hrScreening@mosaichr.tech>",
         to : candidateEmail , 
         subject , 
         text : body,

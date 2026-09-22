@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js"; 
 import {OAuth2Client } from "google-auth-library";
- 
+ import { generateEmbedding } from "../utils/embeddings.js";
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID); 
 
@@ -128,5 +128,28 @@ export async function googleAuth(req,res) {
   } catch (err) {
     console.error(err) ; 
     res.status(401).json({error: "Google authentication failed"});
+  }
+}
+
+
+export  async function updateSeekingRole(req,res) {
+  try { 
+    const {seekingRole} = req.body; 
+
+    if(!seekingRole) { 
+      return res.status(400).json({error : "seekingRole is required"});
+    } 
+
+    const embedding = await generateEmbedding(seekingRole); 
+
+    const user = await User.findByIdAndUpdate( 
+      req.user.id , 
+      {seekingRole , seekingRoleEmbedding : embedding} , 
+      {new: true}  // returns the new updated document 
+    ); 
+    res.json({id: user._id , seekingRole: user.seekingRole});
+  } catch(err) { 
+    console.error(err); 
+    res.status(500).json({error:err.message});
   }
 }

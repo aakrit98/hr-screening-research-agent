@@ -37,7 +37,11 @@ const jobSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // the admin who created this job
       required: true,
-    },
+    }, 
+    embedding: {
+  type: [Number],
+  select: false,
+},
   },
   { timestamps: true }
 );
